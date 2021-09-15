@@ -1,25 +1,35 @@
 <?php 
 	$author_name = "Artjom Morozov";
-	
-	//Kontrollin, kas POST info j6uab kuhugi
-	var_dump($_POST);
-	//Kontrollime kas klikiti submit nuppu
-	$todays_adjective_html = null;
-	$todays_adjective_error = null;
-	$todays_adjective = null;
-	if(isset ($_POST["adjective_submit"]));
-		echo "Klikiti";
-		//kontrollime, kas midagi kirjutati ka 
-		if(!empty($_POST["todays_adjective_input"])) {
-		$todays_adjective_html = "<p>Tanane paev on " .$_POST["todays_adjective_input"] .".</p>";
-		$todays_adjective = $_POST["todays_adjective_input"]
-		} else {
-			$todays_adjective_error = "Palun sisesta tänase kohta sobiv omadussõna!";
-		}
+	$full_time_now = date("d.m.Y H:i:s");
+	$weekday_now = date("N");
+	$day_category = "lihtsalt päev";
+	$hour_now = date("H");
+	$hour_category = "";
 
 	//echo $weekday_now;
 	// võrdub == suurem/väiksem ... < > <= >= pole võrdne !=
-	
+	if ($weekday_now <= 5) {
+		$day_category = "koolipäev";
+	} else {
+		$day_category = "puhkepäev";
+	}
+	$weekday_names_et = ["esmaspäev", "teisipäev", "kolmapäev", "neljapäev", "reede", "laupäev", "pühapäev"];
+
+	if($day_category == "koolipäev") {
+		if($hour_now < 8 or $hour_now >= 23){
+			$hour_category = "uneaeg";
+		} elseif($hour_now >= 8 and $hour_now < 18){
+			$hour_category = "tundide aeg";
+		} else {
+			$hour_category = "vaba aeg";
+		}
+	} else {
+		if($hour_now <= 11) {
+			$hour_category = "uneaeg";
+		} else {
+			$hour_category = "vaba aeg";
+		}
+	}
 	//juhusliku foto lisamine
 	$photo_dir = "photos/";
 	//loen kataloogi sisu
@@ -44,22 +54,6 @@
 	//loosin juhusliku arvu (min peab olema 0 ja max count -1)
 	$photo_num = mt_rand(0, $file_count - 1);
 	$photo_html = '<img src="' .$photo_dir .$all_real_files[$photo_num] .'" alt="Tallinna Ülikool">';
-	
-	//tsükkel
-	//näiteks
-	//<ul>
-	//		<li>pildifailinimi1.jpg</li>
-	//		<li>pildifailinimi2.jpg</li>
-	//		<li>pildifailinimi3.jpg</li>
-	//		...
-	//</ul>
-	
-	$photo_list_html .= "<ul>";
-	for($i = 0;$i < $file_count;$i ++) {
-		$photo_list_html .= "<li>" .$photo_files[$i] ."</li>";
-		
-	}
-	$photo_list_html = "</ul>";
 ?>
 <!DOCTYPE html>
 <html lang="et">
@@ -72,16 +66,8 @@
 	<p>See leht on loodud õppetöö raames ja ei sisalda tõsiseltvõetavat sisu!</p>
 	<p>Õppetöö toimub <a href="https://www.tlu.ee/dt">
 	Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
-	<hr>
-	<form method="POST">
-		<input type="tekst" placeholder="omadussõna tänase päeva kohta" name="todays_adjective_input">
-		value="<?php echo $todays_adjective" ?>
-		<input type="submit" name="todays_submit" value="Saada">
-		<span> echo $todays_adjective_error; ?></span>
-	</form>
-	<?php echo $todays_adjective_html; ?>
-	<hr>
-	
+	<img src="3700x1100_pildivalik181.jpg" alt="Tallinna Ülikooli Mare hoone" width="600">
+	<p>Lehe avamise hetk: <?php echo $weekday_names_et[$weekday_now - 1] .", " .$full_time_now .", ".$day_category .", " .$hour_category; ?>.</p>
 	<?php echo $photo_html; ?>
 </body>
 </html>
